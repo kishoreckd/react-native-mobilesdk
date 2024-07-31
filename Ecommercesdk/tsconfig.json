@@ -23,6 +23,8 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "esnext",
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "typeRoots": ["./node_modules/@types", "./src/types"],
+    "types": ["node"]  // Add any specific types you need here
   }
 }
