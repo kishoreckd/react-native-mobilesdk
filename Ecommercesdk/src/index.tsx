@@ -167,11 +167,19 @@ fragment TypeRef on __Type {
         return false;
       } else {
         const introspectionJson = result.data;
-        console.log('====================================');
+        // console.log('====================================');
         // Define the path using Expo's FileSystem
-        const path = FileSystem.documentDirectory + 'introspection_result.json';
+        const path = `/Users/rhino/Downloads/Reactnative/mobile_sdk_package/Ecommercesdk/src/generated/introspection_result/introspection_result.json`;
         await FileSystem.writeAsStringAsync(path, JSON.stringify(introspectionJson, null, 2));
-        console.log(`Introspection JSON saved to ${path}`);
+        // console.log(`Introspection JSON saved to ${path}`);
+
+ MagentoGraphQL._generateMutations(introspectionJson);
+// console.log(mutations);
+
+        // // Store the mutations in a file using Expo FileSystem
+        // const path2 = FileSystem.documentDirectory + 'generated_mutations.js';
+        // await FileSystem.writeAsStringAsync(path2, mutations);
+        // console.log(`Mutations saved to ${path}`);
 
         return true;
       }
@@ -180,6 +188,102 @@ fragment TypeRef on __Type {
       return false;
     }
   }
+
+
+  static _generateMutations(introspectionJson: any) {
+    const types = introspectionJson.__schema.types;
+
+
+    let mutations = '';
+
+    types.forEach((type: any) => {
+      if (type.__typename === '__Type' && type.name === 'Mutation') {
+        const fields = type.fields;
+        fields.forEach((field: any) => {
+          const fieldName = field.name;
+
+          const args = field.args || [];
+          const mutation = MagentoGraphQL._generateMutationFromField(fieldName, field, introspectionJson);
+
+            console.log(mutation);
+          return;
+
+          // const mutationFile =
+          mutations += mutation;
+        });
+        return;
+
+      }
+    });
+
+    const mutationDirectory = 'generated/queries/mutations/src';
+    return mutations;
+  }
+
+  static _generateMutationFromField(fieldName: string, field: any, introspectionJson: any) {
+    const args = field.args || [];
+    const argList = args.map((arg: any) => {
+      const argName = arg.name;
+      const argTypeName = MagentoGraphQL._getArgTypeName(arg);
+      return `$${argName}: ${argTypeName}`;
+    }).join(', ');
+
+    const type = field.type;
+    const argVariables = args.map((arg: any) => `$${arg.name}`).join(', ');
+
+    let subfields = '';
+    if (type.fields) {
+      subfields = MagentoGraphQL._generateSubfieldsMutation(type.fields, introspectionJson);
+    }
+
+    const queryBody = subfields ? `{ ${subfields} }` : '';
+
+    return `
+const ${fieldName}Mutation = \`
+  mutation ${fieldName}Query(${argList}) {
+    ${fieldName}(${argVariables}) ${queryBody}
+  }
+\`;
+    `;
+  }
+
+  static _generateSubfieldsMutation(fields: any[], introspectionJson: any) {
+    return fields.map((field: any) => {
+      const fieldName = field.name;
+      const typeName = field.type.name || field.type.ofType?.name;
+      switch (typeName) {
+        case 'String':
+        case 'Int':
+        case 'ID':
+        case 'Boolean':
+          return `${fieldName}`;
+        // Handle other specific types
+        default:
+          return '';
+      }
+    }).filter((field: any) => field).join('\n');
+  }
+
+
+
+
+static _getArgTypeName(arg: ArgType): string {
+  if (arg.kind === 'NON_NULL') {
+    return `${MagentoGraphQL._getArgTypeName(arg.ofType!)}!`;
+  } else if (arg.kind === 'LIST') {
+    return `[${MagentoGraphQL._getArgTypeName(arg.ofType!)}]`;
+  } else if (arg.kind === 'INPUT_OBJECT') {
+    return arg.name ?? 'dynamic';
+  }
+  return arg.name ?? 'dynamic';
+}
 }
 
+
+
+interface ArgType {
+  kind: string;
+  name?: string;
+  ofType?: ArgType;
+}
 export default MagentoGraphQL;
