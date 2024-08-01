@@ -6,6 +6,8 @@ export function multiply(a: number, b: number): Promise<number> {
 import * as FileSystem from 'expo-file-system';
 import { ApolloClient, HttpLink, InMemoryCache, gql } from '@apollo/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import RNFS from "react-native-fs";
+
 class MagentoGraphQL {
 
   static _url = '';
@@ -173,7 +175,7 @@ fragment TypeRef on __Type {
         await FileSystem.writeAsStringAsync(path, JSON.stringify(introspectionJson, null, 2));
         // console.log(`Introspection JSON saved to ${path}`);
 
- MagentoGraphQL._generateMutations(introspectionJson);
+ MagentoGraphQL._generateQueries(introspectionJson);
 // console.log(mutations);
 
         // // Store the mutations in a file using Expo FileSystem
@@ -248,6 +250,81 @@ const ${fieldName}Mutation = \`
   }
 
   static _generateSubfieldsMutation(fields: any[], introspectionJson: any) {
+    return fields.map((field: any) => {
+      const fieldName = field.name;
+      const typeName = field.type.name || field.type.ofType?.name;
+      switch (typeName) {
+        case 'String':
+        case 'Int':
+        case 'ID':
+        case 'Boolean':
+          return `${fieldName}`;
+        // Handle other specific types
+        default:
+          return '';
+      }
+    }).filter((field: any) => field).join('\n');
+  }
+
+
+
+  static _generateQueries(introspectionJson: any) {
+    const types = introspectionJson.__schema.types;
+
+
+    let Query = '';
+
+    types.forEach((type: any) => {
+      if (type.__typename === '__Type' && type.name === 'Query') {
+        const fields = type.fields;
+        fields.forEach((field: any) => {
+          const fieldName = field.name;
+
+          const args = field.args || [];
+          const query = MagentoGraphQL._generateQueryFromField(fieldName, field, introspectionJson);
+
+            console.log(query);
+
+          Query += Query;
+
+        });
+        return;
+
+      }
+    });
+
+    const QueryDirectory = 'generated/queries/query/src';
+    return Query;
+  }
+
+  static _generateQueryFromField(fieldName: string, field: any, introspectionJson: any) {
+    const args = field.args || [];
+    const argList = args.map((arg: any) => {
+      const argName = arg.name;
+      const argTypeName = MagentoGraphQL._getArgTypeName(arg);
+      return `$${argName}: ${argTypeName}`;
+    }).join(', ');
+
+    const type = field.type;
+    const argVariables = args.map((arg: any) => `$${arg.name}`).join(', ');
+
+    let subfields = '';
+    if (type.fields) {
+      subfields = MagentoGraphQL._generateSubfieldsQuery(type.fields, introspectionJson);
+    }
+
+    const queryBody = subfields ? `{ ${subfields} }` : '';
+
+    return `
+const ${fieldName}Query = \`
+  query ${fieldName}Query(${argList}) {
+    ${fieldName}(${argVariables}) ${queryBody}
+  }
+\`;
+    `;
+  }
+
+  static _generateSubfieldsQuery(fields: any[], introspectionJson: any) {
     return fields.map((field: any) => {
       const fieldName = field.name;
       const typeName = field.type.name || field.type.ofType?.name;
