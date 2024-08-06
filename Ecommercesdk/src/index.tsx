@@ -165,14 +165,14 @@ fragment TypeRef on __Type {
       });
 
       if (result.errors) {
-        console.error('Error generating Magento GraphQL schema:', result.errors);
+        console.error('Error generating Magento GraphQL schema :', result.errors);
         return false;
       } else {
         const introspectionJson = result.data;
         // console.log('====================================');
         // Define the path using Expo's FileSystem
-        const path = `/Users/rhino/Downloads/Reactnative/mobile_sdk_package/Ecommercesdk/src/generated/introspection_result/introspection_result.json`;
-        await FileSystem.writeAsStringAsync(path, JSON.stringify(introspectionJson, null, 2));
+        // const path = `/Users/rhino/Downloads/Reactnative/mobile_sdk_package/Ecommercesdk/src/generated/introspection_result/introspection_result.json`;
+        // await FileSystem.writeAsStringAsync(path, JSON.stringify(introspectionJson, null, 2));
         // console.log(`Introspection JSON saved to ${path}`);
 
  MagentoGraphQL._generateQueries(introspectionJson);
@@ -186,7 +186,7 @@ fragment TypeRef on __Type {
         return true;
       }
     } catch (error) {
-      console.error('Error generating Magento GraphQL schema:', error);
+      console.error('Error generating Magento GraphQL schema1:', error);
       return false;
     }
   }
