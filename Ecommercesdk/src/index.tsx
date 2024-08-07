@@ -47,7 +47,7 @@ class MagentoGraphQL {
 
   static async generate() {
 
-var IntrospectionQuery = gql`
+    var IntrospectionQuery = gql`
 query IntrospectionQuery {
   __schema {
     queryType {
@@ -175,8 +175,9 @@ fragment TypeRef on __Type {
         // await FileSystem.writeAsStringAsync(path, JSON.stringify(introspectionJson, null, 2));
         // console.log(`Introspection JSON saved to ${path}`);
 
- MagentoGraphQL._generateQueries(introspectionJson);
-// console.log(mutations);
+        MagentoGraphQL._generateQueries(introspectionJson);
+        MagentoGraphQL._generateMutations(introspectionJson);
+        // console.log(mutations);
 
         // // Store the mutations in a file using Expo FileSystem
         // const path2 = FileSystem.documentDirectory + 'generated_mutations.js';
@@ -186,17 +187,18 @@ fragment TypeRef on __Type {
         return true;
       }
     } catch (error) {
-      console.error('Error generating Magento GraphQL schema1:', error);
+      console.error('Error generating Magento GraphQL schema:', error);
       return false;
     }
   }
 
 
-  static _generateMutations(introspectionJson: any) {
+  static async _generateMutations(introspectionJson: any) {
     const types = introspectionJson.__schema.types;
 
 
-    let mutations = '';
+    // let mutations = '';
+    let mutations: string[] = [];
 
     types.forEach((type: any) => {
       if (type.__typename === '__Type' && type.name === 'Mutation') {
@@ -206,20 +208,25 @@ fragment TypeRef on __Type {
 
           const args = field.args || [];
           const mutation = MagentoGraphQL._generateMutationFromField(fieldName, field, introspectionJson);
-
-            console.log(mutation);
+          mutations.push(mutation);
+          console.log(mutation);
           return;
-
-          // const mutationFile =
-          mutations += mutation;
         });
         return;
 
       }
     });
+    const mutationFileContent = mutations.join('\n\n');
+     const path = '/Users/admin/React/react-native-mobilesdk/Ecommercesdk/src/generated/mutations/mutations.js';
 
-    const mutationDirectory = 'generated/queries/mutations/src';
-    return mutations;
+    try {
+      await FileSystem.writeAsStringAsync(path, mutationFileContent);
+      console.log(`Mutations saved to ${path}`);
+    } catch (error) {
+      console.error(`Error writing mutations to file: ${error}`);
+    }
+
+     return mutationFileContent;
   }
 
   static _generateMutationFromField(fieldName: string, field: any, introspectionJson: any) {
@@ -268,33 +275,43 @@ const ${fieldName}Mutation = \`
 
 
 
-  static _generateQueries(introspectionJson: any) {
+  static async _generateQueries(introspectionJson: any) {
     const types = introspectionJson.__schema.types;
 
 
-    let Query = '';
+    // let Query = '';
+    let queries: string[] = [];
 
     types.forEach((type: any) => {
       if (type.__typename === '__Type' && type.name === 'Query') {
         const fields = type.fields;
-        fields.forEach((field: any) => {
+        fields.forEach( (field: any) => {
           const fieldName = field.name;
 
           const args = field.args || [];
           const query = MagentoGraphQL._generateQueryFromField(fieldName, field, introspectionJson);
+          queries.push(query);
 
-            console.log(query);
-
-          Query += Query;
+          //  Query += Query;
 
         });
         return;
 
       }
     });
+    const queryFileContent = queries.join('\n\n');
+     const path = '/Users/admin/React/react-native-mobilesdk/Ecommercesdk/src/generated/queries/queries.js';
 
-    const QueryDirectory = 'generated/queries/query/src';
-    return Query;
+    try {
+      await FileSystem.writeAsStringAsync(path, queryFileContent);
+      console.log(`Queries saved to ${path}`);
+    } catch (error) {
+      console.error(`Error writing queries to file: ${error}`);
+    }
+
+     return queryFileContent;
+
+    //  return Query;
   }
 
   static _generateQueryFromField(fieldName: string, field: any, introspectionJson: any) {
@@ -344,16 +361,16 @@ const ${fieldName}Query = \`
 
 
 
-static _getArgTypeName(arg: ArgType): string {
-  if (arg.kind === 'NON_NULL') {
-    return `${MagentoGraphQL._getArgTypeName(arg.ofType!)}!`;
-  } else if (arg.kind === 'LIST') {
-    return `[${MagentoGraphQL._getArgTypeName(arg.ofType!)}]`;
-  } else if (arg.kind === 'INPUT_OBJECT') {
+  static _getArgTypeName(arg: ArgType): string {
+    if (arg.kind === 'NON_NULL') {
+      return `${MagentoGraphQL._getArgTypeName(arg.ofType!)}!`;
+    } else if (arg.kind === 'LIST') {
+      return `[${MagentoGraphQL._getArgTypeName(arg.ofType!)}]`;
+    } else if (arg.kind === 'INPUT_OBJECT') {
+      return arg.name ?? 'dynamic';
+    }
     return arg.name ?? 'dynamic';
   }
-  return arg.name ?? 'dynamic';
-}
 }
 
 
