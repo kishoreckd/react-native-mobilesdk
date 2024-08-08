@@ -1,15 +1,15 @@
 
-const availableStoresQuery = `
-  query availableStoresQuery($useCurrentGroup: useCurrentGroup) {
-    availableStores($useCurrentGroup) 
+export const availableStoresQuery = `
+  query availableStoresQuery($useCurrentGroup: Boolean) {
+    availableStores(useCurrentGroup: $useCurrentGroup) 
   }
 `;
     
 
 
-const cartQuery = `
-  query cartQuery($cart_id: cart_id) {
-    cart($cart_id) { email
+export const cartQuery = `
+  query cartQuery($cart_id: String!) {
+    cart(cart_id: $cart_id) { email
 gift_receipt_included
 id
 is_virtual
@@ -19,17 +19,17 @@ printed_card_included }
     
 
 
-const categoriesQuery = `
-  query categoriesQuery($filters: filters, $pageSize: pageSize, $currentPage: currentPage) {
-    categories($filters, $pageSize, $currentPage) { total_count }
+export const categoriesQuery = `
+  query categoriesQuery($filters: CategoryFilterInput, $pageSize: Int, $currentPage: Int) {
+    categories(filters: $filters, pageSize: $pageSize, currentPage: $currentPage) { total_count }
   }
 `;
     
 
 
-const categoryQuery = `
-  query categoryQuery($id: id) {
-    category($id) { amp_homepage_image
+export const categoryQuery = `
+  query categoryQuery($id: Int) {
+    category(id: $id) { amp_homepage_image
 automatic_sorting
 available_sort_by
 canonical_url
@@ -71,15 +71,15 @@ url_suffix }
     
 
 
-const categoryListQuery = `
-  query categoryListQuery($filters: filters) {
-    categoryList($filters) 
+export const categoryListQuery = `
+  query categoryListQuery($filters: CategoryFilterInput) {
+    categoryList(filters: $filters) 
   }
 `;
     
 
 
-const checkoutAgreementsQuery = `
+export const checkoutAgreementsQuery = `
   query checkoutAgreementsQuery() {
     checkoutAgreements() 
   }
@@ -87,17 +87,17 @@ const checkoutAgreementsQuery = `
     
 
 
-const cmsBlocksQuery = `
-  query cmsBlocksQuery($identifiers: identifiers) {
-    cmsBlocks($identifiers) 
+export const cmsBlocksQuery = `
+  query cmsBlocksQuery($identifiers: [String]) {
+    cmsBlocks(identifiers: $identifiers) 
   }
 `;
     
 
 
-const cmsPageQuery = `
-  query cmsPageQuery($id: id, $identifier: identifier) {
-    cmsPage($id, $identifier) { content
+export const cmsPageQuery = `
+  query cmsPageQuery($id: Int, $identifier: String) {
+    cmsPage(id: $id, identifier: $identifier) { content
 content_heading
 identifier
 meta_description
@@ -113,16 +113,16 @@ url_key }
     
 
 
-const compareListQuery = `
-  query compareListQuery($uid: uid) {
-    compareList($uid) { item_count
+export const compareListQuery = `
+  query compareListQuery($uid: ID!) {
+    compareList(uid: $uid) { item_count
 uid }
   }
 `;
     
 
 
-const countriesQuery = `
+export const countriesQuery = `
   query countriesQuery() {
     countries() 
   }
@@ -130,9 +130,9 @@ const countriesQuery = `
     
 
 
-const countryQuery = `
-  query countryQuery($id: id) {
-    country($id) { full_name_english
+export const countryQuery = `
+  query countryQuery($id: String) {
+    country(id: $id) { full_name_english
 full_name_locale
 id
 three_letter_abbreviation
@@ -142,7 +142,7 @@ two_letter_abbreviation }
     
 
 
-const currencyQuery = `
+export const currencyQuery = `
   query currencyQuery() {
     currency() { available_currency_codes
 base_currency_code
@@ -156,15 +156,15 @@ default_display_currency_symbol }
     
 
 
-const customAttributeMetadataQuery = `
-  query customAttributeMetadataQuery($attributes: attributes) {
-    customAttributeMetadata($attributes) 
+export const customAttributeMetadataQuery = `
+  query customAttributeMetadataQuery($attributes: [AttributeInput!]!) {
+    customAttributeMetadata(attributes: $attributes) 
   }
 `;
     
 
 
-const customerQuery = `
+export const customerQuery = `
   query customerQuery() {
     customer() { allow_remote_shopping_assistance
 created_at
@@ -188,7 +188,7 @@ taxvat }
     
 
 
-const customerCartQuery = `
+export const customerCartQuery = `
   query customerCartQuery() {
     customerCart() 
   }
@@ -196,7 +196,7 @@ const customerCartQuery = `
     
 
 
-const customerDownloadableProductsQuery = `
+export const customerDownloadableProductsQuery = `
   query customerDownloadableProductsQuery() {
     customerDownloadableProducts() 
   }
@@ -204,7 +204,7 @@ const customerDownloadableProductsQuery = `
     
 
 
-const customerOrdersQuery = `
+export const customerOrdersQuery = `
   query customerOrdersQuery() {
     customerOrders() { total_count }
   }
@@ -212,7 +212,7 @@ const customerOrdersQuery = `
     
 
 
-const customerPaymentTokensQuery = `
+export const customerPaymentTokensQuery = `
   query customerPaymentTokensQuery() {
     customerPaymentTokens() 
   }
@@ -220,25 +220,25 @@ const customerPaymentTokensQuery = `
     
 
 
-const dynamicBlocksQuery = `
-  query dynamicBlocksQuery($input: input, $pageSize: pageSize, $currentPage: currentPage) {
-    dynamicBlocks($input, $pageSize, $currentPage) 
+export const dynamicBlocksQuery = `
+  query dynamicBlocksQuery($input: DynamicBlocksFilterInput, $pageSize: Int, $currentPage: Int) {
+    dynamicBlocks(input: $input, pageSize: $pageSize, currentPage: $currentPage) 
   }
 `;
     
 
 
-const getHostedProUrlQuery = `
-  query getHostedProUrlQuery($input: input) {
-    getHostedProUrl($input) { secure_form_url }
+export const getHostedProUrlQuery = `
+  query getHostedProUrlQuery($input: HostedProUrlInput!) {
+    getHostedProUrl(input: $input) { secure_form_url }
   }
 `;
     
 
 
-const getPayflowLinkTokenQuery = `
-  query getPayflowLinkTokenQuery($input: input) {
-    getPayflowLinkToken($input) { paypal_url
+export const getPayflowLinkTokenQuery = `
+  query getPayflowLinkTokenQuery($input: PayflowLinkTokenInput!) {
+    getPayflowLinkToken(input: $input) { paypal_url
 secure_token
 secure_token_id }
   }
@@ -246,18 +246,18 @@ secure_token_id }
     
 
 
-const giftCardAccountQuery = `
-  query giftCardAccountQuery($input: input) {
-    giftCardAccount($input) { code
+export const giftCardAccountQuery = `
+  query giftCardAccountQuery($input: GiftCardAccountInput!) {
+    giftCardAccount(input: $input) { code
 expiration_date }
   }
 `;
     
 
 
-const giftRegistryQuery = `
-  query giftRegistryQuery($giftRegistryUid: giftRegistryUid) {
-    giftRegistry($giftRegistryUid) { created_at
+export const giftRegistryQuery = `
+  query giftRegistryQuery($giftRegistryUid: ID!) {
+    giftRegistry(giftRegistryUid: $giftRegistryUid) { created_at
 event_name
 message
 owner_name
@@ -267,31 +267,31 @@ uid }
     
 
 
-const giftRegistryEmailSearchQuery = `
-  query giftRegistryEmailSearchQuery($email: email) {
-    giftRegistryEmailSearch($email) 
+export const giftRegistryEmailSearchQuery = `
+  query giftRegistryEmailSearchQuery($email: String!) {
+    giftRegistryEmailSearch(email: $email) 
   }
 `;
     
 
 
-const giftRegistryIdSearchQuery = `
-  query giftRegistryIdSearchQuery($giftRegistryUid: giftRegistryUid) {
-    giftRegistryIdSearch($giftRegistryUid) 
+export const giftRegistryIdSearchQuery = `
+  query giftRegistryIdSearchQuery($giftRegistryUid: ID!) {
+    giftRegistryIdSearch(giftRegistryUid: $giftRegistryUid) 
   }
 `;
     
 
 
-const giftRegistryTypeSearchQuery = `
-  query giftRegistryTypeSearchQuery($firstName: firstName, $lastName: lastName, $giftRegistryTypeUid: giftRegistryTypeUid) {
-    giftRegistryTypeSearch($firstName, $lastName, $giftRegistryTypeUid) 
+export const giftRegistryTypeSearchQuery = `
+  query giftRegistryTypeSearchQuery($firstName: String!, $lastName: String!, $giftRegistryTypeUid: ID) {
+    giftRegistryTypeSearch(firstName: $firstName, lastName: $lastName, giftRegistryTypeUid: $giftRegistryTypeUid) 
   }
 `;
     
 
 
-const giftRegistryTypesQuery = `
+export const giftRegistryTypesQuery = `
   query giftRegistryTypesQuery() {
     giftRegistryTypes() 
   }
@@ -299,24 +299,24 @@ const giftRegistryTypesQuery = `
     
 
 
-const isEmailAvailableQuery = `
-  query isEmailAvailableQuery($email: email) {
-    isEmailAvailable($email) { is_email_available }
+export const isEmailAvailableQuery = `
+  query isEmailAvailableQuery($email: String!) {
+    isEmailAvailable(email: $email) { is_email_available }
   }
 `;
     
 
 
-const menuItemsQuery = `
-  query menuItemsQuery($menuKey: menuKey, $parentId: parentId) {
-    menuItems($menuKey, $parentId) { menu_key
+export const menuItemsQuery = `
+  query menuItemsQuery($menuKey: String, $parentId: Int) {
+    menuItems(menuKey: $menuKey, parentId: $parentId) { menu_key
 menu_title }
   }
 `;
     
 
 
-const productReviewRatingsMetadataQuery = `
+export const productReviewRatingsMetadataQuery = `
   query productReviewRatingsMetadataQuery() {
     productReviewRatingsMetadata() 
   }
@@ -324,24 +324,24 @@ const productReviewRatingsMetadataQuery = `
     
 
 
-const productsQuery = `
-  query productsQuery($search: search, $filter: filter, $pageSize: pageSize, $currentPage: currentPage, $sort: sort) {
-    products($search, $filter, $pageSize, $currentPage, $sort) { total_count }
+export const productsQuery = `
+  query productsQuery($search: String, $filter: ProductAttributeFilterInput, $pageSize: Int, $currentPage: Int, $sort: ProductAttributeSortInput) {
+    products(search: $search, filter: $filter, pageSize: $pageSize, currentPage: $currentPage, sort: $sort) { total_count }
   }
 `;
     
 
 
-const routeQuery = `
-  query routeQuery($url: url) {
-    route($url) { redirect_code
+export const routeQuery = `
+  query routeQuery($url: String!) {
+    route(url: $url) { redirect_code
 relative_url }
   }
 `;
     
 
 
-const storeConfigQuery = `
+export const storeConfigQuery = `
   query storeConfigQuery() {
     storeConfig() { absolute_footer
 allow_gift_receipt
@@ -459,17 +459,17 @@ zero_subtotal_title }
     
 
 
-const tokenBaseCardsQuery = `
-  query tokenBaseCardsQuery($hash: hash) {
-    tokenBaseCards($hash) 
+export const tokenBaseCardsQuery = `
+  query tokenBaseCardsQuery($hash: String) {
+    tokenBaseCards(hash: $hash) 
   }
 `;
     
 
 
-const tokenBaseCheckoutConfigQuery = `
-  query tokenBaseCheckoutConfigQuery($method: method) {
-    tokenBaseCheckoutConfig($method) { achImage
+export const tokenBaseCheckoutConfigQuery = `
+  query tokenBaseCheckoutConfigQuery($method: String!) {
+    tokenBaseCheckoutConfig(method: $method) { achImage
 apiLoginId
 canSaveCard
 canStoreBin
@@ -489,9 +489,9 @@ useVault }
     
 
 
-const urlResolverQuery = `
-  query urlResolverQuery($url: url) {
-    urlResolver($url) { canonical_url
+export const urlResolverQuery = `
+  query urlResolverQuery($url: String!) {
+    urlResolver(url: $url) { canonical_url
 entity_uid
 id
 redirectCode
@@ -501,7 +501,7 @@ relative_url }
     
 
 
-const wishlistQuery = `
+export const wishlistQuery = `
   query wishlistQuery() {
     wishlist() { items_count
 name
