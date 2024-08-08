@@ -8,6 +8,8 @@ import { ApolloClient, HttpLink, InMemoryCache, gql } from '@apollo/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNFS from "react-native-fs";
 
+  
+
 class MagentoGraphQL {
 
   static _url = '';
