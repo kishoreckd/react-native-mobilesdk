@@ -15,7 +15,8 @@ const App = () => {
         });
         // const url = await AsyncStorage.getItem('url');
 
-        await MagentoGraphQL.generate();
+           await MagentoGraphQL.generate();
+          // await MagentoGraphQL.isEmailAvailable('abcd@dckap.com');
       } catch (error) {
         console.error('Error initializing Magento:', error);
       }
